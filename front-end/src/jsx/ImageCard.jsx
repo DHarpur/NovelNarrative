@@ -3,7 +3,7 @@ import { Card } from 'react-bootstrap';
 import image from '../images/BladeRunner2049.jpg';
 
 const cardStyle = {
-    boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.2)'
+    boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.4)'
 };
 
 const imgStyle = {
