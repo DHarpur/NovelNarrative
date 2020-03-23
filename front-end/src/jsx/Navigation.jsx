@@ -1,5 +1,5 @@
 import React, { Fragment, Component } from 'react';
-import { Navbar, Nav, Button, Form } from 'react-bootstrap';
+import { Button, Form, Menu } from 'semantic-ui-react';
 import { Switch, Route, Link } from 'react-router-dom';
 import MoviePage from './pages/MoviePage';
 import HomePage from './pages/HomePage';
@@ -11,20 +11,22 @@ class Navigation extends Component {
     render() {
         return (
             <div>
-                <Navbar bg="primary" variant="dark" >
-                    <Navbar.Brand as={Link} to='/'>
+                <Menu>
+                    <Menu.Item header as={Link} to='/'>
                         NovelNarrative
-                    </Navbar.Brand>
-                    <Nav className="mr-auto" >
-                        <Nav.Link as={Link} to="movies">Movies</Nav.Link>
-                        <Nav.Link as={Link} to="tvshows">TV Shows</Nav.Link>
-                        <Nav.Link as={Link} to="books">Books</Nav.Link>
-                    </Nav>
-                    <Form inline>
-                        <Button variant="dark" style={{marginRight: '5px'}} href='/login'>Login</Button>
-                        <Button variant="dark" href='/login'>Register</Button>
-                    </Form>
-                </Navbar>
+                    </Menu.Item>
+                    <Menu.Item as={Link} to="movies">Movies</Menu.Item>
+                    <Menu.Item as={Link} to="tvshows">TV Shows</Menu.Item>
+                    <Menu.Item as={Link} to="books">Books</Menu.Item>
+                    <Menu.Menu position={"right"}>
+                        <Menu.Item href='/login'>
+                            <Button primary>Login</Button>
+                        </Menu.Item>
+                        <Menu.Item  href='/login'>
+                            <Button>Register</Button>
+                        </Menu.Item>
+                    </Menu.Menu>
+                </Menu>
                 <div>
                     <Switch>
                         <Route exact path='/' component={HomePage} />
