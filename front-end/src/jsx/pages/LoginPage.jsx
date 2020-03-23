@@ -1,6 +1,8 @@
 import React from 'react';
+import { Header } from 'semantic-ui-react';
 import LoginBox from '../LoginBox';
 import RegisterBox from '../RegisterBox';
+import { Fragment } from 'react';
 
 const boxStyle = {
     margin: 'auto'
@@ -8,15 +10,15 @@ const boxStyle = {
 
 const LoginPage = () => {
     return(
-        <div>
-            <h2>
+        <Fragment>
+            <Header as="h1">
                 Login or Register Page
-            </h2>
+            </Header>
             <div style={boxStyle}>
                 <LoginBox />
                 <RegisterBox />
             </div>
-        </div>
+        </Fragment>
     );
 };
 
