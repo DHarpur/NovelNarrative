@@ -1,12 +1,13 @@
 import React, { Fragment } from 'react';
+import { Header } from 'semantic-ui-react';
 import ImageGallery from '../ImageGallery';
 
 const BookPage = () => {
     return (
         <Fragment>
-            <div>
-                <h2>Book Page</h2>
-            </div>
+            <Header as="h1">
+                Book Page
+            </Header>
             <ImageGallery />
         </Fragment>
     );
