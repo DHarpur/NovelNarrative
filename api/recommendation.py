@@ -18,7 +18,7 @@ def get_top_n(predictions, n=10):
 
 
 def get_book_title(book_id):
-    return bookData[book_id].title
+    return bookData.loc[bookData['book_id'] == book_id].title
 
 
 bookData = pd.read_csv("./data/book/books.csv", header=0)
@@ -28,5 +28,7 @@ bookPredictions, bookAlgorithm = surprise.dump.load("./RecommenderDump/algorithm
 
 topRecommendations = get_top_n(bookPredictions, n=10)
 
-for uid, user_ratings in topRecommendations.items():
-    print(uid, [get_book_title(int(iid)) for (iid, _) in user_ratings])
+print(topRecommendations['22771'])
+
+topRecommendationsBooks = topRecommendations['22771'][0][0]
+print(get_book_title(int(topRecommendationsBooks)))
