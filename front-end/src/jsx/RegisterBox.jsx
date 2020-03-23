@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button } from 'semantic-ui-react';
 
 const registerBoxStyle = {
     border: '1px black solid',
@@ -16,19 +16,19 @@ const RegisterBox = () => {
                 Register
             </p>
             <Form>
-                <Form.Group>
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" placeholder="Username" />
-                </Form.Group>
-                <Form.Group controlId="formGroupPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
-                </Form.Group>
-                <Form.Group controlId="formGroupPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Confirm Password" />
-                </Form.Group>
-                <Button variant="primary" type="submit">
+                <Form.Field>
+                    <label>Username</label>
+                    <input type="text" placeholder="Username" />
+                </Form.Field>
+                <Form.Field controlId="formGroupPassword">
+                    <label>Password</label>
+                    <input type="password" placeholder="Password" />
+                </Form.Field>
+                <Form.Field controlId="formGroupPassword">
+                    <label>Confirm Password</label>
+                    <input type="password" placeholder="Confirm Password" />
+                </Form.Field>
+                <Button type="submit">
                     Register
                 </Button>
             </Form>
