@@ -1,4 +1,5 @@
 from surprise import SVD, Dataset, Reader, dump
+from mySVDAlgo import mySVDAlgo
 import surprise
 
 reader1 = Reader(line_format='user item rating', sep=',', skip_lines=1)
@@ -11,8 +12,8 @@ bookTrain, bookTest = surprise.model_selection.train_test_split(bookRatingsData,
 movieTrain, movieTest = surprise.model_selection.train_test_split(movieRatingsData, test_size=0.25)
 
 sim_options = {'name': 'pearson_baseline', 'user_based': False}
-algorithm1 = SVD()
-algorithm2 = SVD()
+algorithm1 = mySVDAlgo()
+algorithm2 = mySVDAlgo()
 
 kSplit = surprise.model_selection.split.KFold(n_splits=10, shuffle=True)
 
