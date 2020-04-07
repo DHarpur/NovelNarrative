@@ -29,6 +29,7 @@ def get_all_predictions_for_user(user_id, data, algorithm, model_type, features,
     return recDF.head(n)
 
 
+@app.route('/books/recommendations/<int:user_id>')
 def get_book_recommendations(user_id, number_of_recs=10):
     bookData = database.get_all_books()
     bookModel = joblib.load("./RecommenderDump/BookModel")
@@ -40,6 +41,7 @@ def get_book_recommendations(user_id, number_of_recs=10):
         print(bookTitle)
 
 
+@app.route('/movies/recommendations/<int:user_id>')
 def get_movie_recommendations(user_id, number_of_recs=10):
     movieData = database.get_all_movies()
     movieFeatures = joblib.load("./RecommenderDump/MovieFeatures")
