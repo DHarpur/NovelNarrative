@@ -1,16 +1,16 @@
 import psycopg2
-from database import databaseConfig as cfg
+from database import databaseConfig as config
 import pandas as pd
 
 
 class DatabaseManager:
     def __init__(self):
         try:
-            self.connection = psycopg2.connect(user=cfg.postgres['user'],
-                                               host=cfg.postgres['host'],
-                                               password=cfg.postgres['password'],
-                                               port=cfg.postgres['port'],
-                                               database=cfg.postgres['database'])
+            self.connection = psycopg2.connect(user=config.postgres['user'],
+                                               host=config.postgres['host'],
+                                               password=config.postgres['password'],
+                                               port=config.postgres['port'],
+                                               database=config.postgres['database'])
             self.cursor = self.connection.cursor()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -20,12 +20,27 @@ class DatabaseManager:
 
     def insert_into_database(self, query):
         self.cursor.execute(query)
-        self.connection.commit
+        self.connection.commit()
 
     def get_user(self, query):
-        user = pd.read_sql_query(query, self.connection)
-        return user
+        try:
+            user = pd.read_sql_query(query, self.connection)
+            return user
+        except(Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            return None
 
+    def get_movie(self, query):
+        movie = pd.read_sql_query(query, self.connection)
+        return movie
+
+    def get_book(self, query):
+        book = pd.read_sql_query(query, self.connection)
+        return book
+
+    def get_token(self, query):
+        token = pd.read_sql_query(query, self.connection)
+        return token
 
     def get_book_ratings(self):
         sql = "SELECT * FROM \"NovelNarrative\".bookratings"
@@ -69,21 +84,14 @@ class DatabaseManager:
         return movies
 
     def get_movie_tags(self):
-        sql = "SELECT * FROM \"NovelNarrative\".movietags"
+        sql = "SELECT * FROM \"NovelNarrative\".movietags mt WHERE mt.movieid IN " \
+                "(SELECT mr.movieid FROM \"NovelNarrative\".movieratings mr)"
         movie_tags = pd.read_sql_query(sql, self.connection)
-        return movie_tags
+        return movie_tags[['movieid', 'tag']]
 
-    def get_movie_features(self, movie_ratings=None):
-        movie_tags = self.get_movie_tags()
-        if movie_ratings is None:
-            movie_ratings = self.get_movie_ratings()
-        movie_tags = movie_tags[['movieid', 'tag']]
-        movie_features = movie_tags.dropna()
-        movie_features = movie_features[movie_features.movieid.isin(movie_ratings.movieid)]
-        return movie_features
-
-    def get_movies_with_features(self, movies):
-        movie_features = self.get_movie_features()
-        movies = movies[movies.movieid.isin(movie_features.movieid)]
-        print(movies.head())
+    def get_movies_with_features(self):
+        sql = "SELECT movieid FROM \"NovelNarrative\".movies mt WHERE mt.movieid IN " \
+              "(SELECT mr.movieid FROM \"NovelNarrative\".movieratings mr)"
+        movies = pd.read_sql_query(sql, self.connection)
+        movies = movies['movieid'].unique()
         return movies

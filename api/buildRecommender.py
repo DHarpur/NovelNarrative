@@ -4,11 +4,17 @@ import joblib
 from database import database
 
 
+def connectToDatabase():
+    connection = database.DatabaseManager()
+    return connection
+
+
 def initialiseBookModel():
     print("Loading in data from database...")
-    bookRatingsDF = database.get_book_ratings()
-    booksDF = database.get_all_books()
-    bookFeaturesDF = database.get_book_features(booksDF)
+    connection = connectToDatabase()
+    bookRatingsDF = connection.get_book_ratings()
+    booksDF = connection.get_all_books()
+    bookFeaturesDF = connection.get_book_features(booksDF)
     print("All data loaded from database!")
 
     print("Prep datasets...")
@@ -43,8 +49,9 @@ def initialiseBookModel():
 
 def initialiseMovieModel():
     print("Loading in data from database...")
-    movieRatingsDF = database.get_movie_ratings()
-    movieFeaturesDF = database.get_movie_features(movieRatingsDF)
+    connection = connectToDatabase()
+    movieRatingsDF = connection.get_movie_ratings()
+    # movieFeaturesDF = connection.get_movie_tags()
     print("All data loaded from database!")
 
     print("Prep datasets...")
@@ -52,8 +59,7 @@ def initialiseMovieModel():
     print("Datasets prepped...")
 
     print("Fit user and item interactions to dataset...")
-    movieDataSet.fit(users=movieRatingsDF['userid'].unique(), items=movieRatingsDF['movieid'].unique(),
-                     item_features=movieFeaturesDF['tag'].values.flatten())
+    movieDataSet.fit(users=movieRatingsDF['userid'].unique(), items=movieRatingsDF['movieid'].unique())
     print("Dataset user and item interactions fitted...")
 
     print("Build user and item interactions in dataset...")
@@ -61,25 +67,26 @@ def initialiseMovieModel():
         ((x['userid'], x['movieid']) for _, x in movieRatingsDF.iterrows()))
     print("Dataset user and item interactions built...")
 
+    '''
     print("Build item features to dataset...")
     movieFeatures = movieDataSet.build_item_features(
         (x, [y]) for x, y in zip(movieFeaturesDF['movieid'], movieFeaturesDF['tag']))
     print("Dataset item features built...")
-
+    '''
     print("Fit movie model...")
     movieModel = LightFM(loss='warp')
-    movieModel.fit(movieInteractions, item_features=movieFeatures)
+    movieModel.fit(movieInteractions)
     print("Movie model fitting complete!")
 
     print("Begin dumping model to file")
     joblib.dump(movieModel, "./RecommenderDump/MovieModel")
-    joblib.dump(movieFeatures, "./RecommenderDump/MovieFeatures")
+    # joblib.dump(movieFeatures, "./RecommenderDump/MovieFeatures")
     print("Models saved to file!")
 
 
 def main():
     initialiseBookModel()
-    initialiseMovieModel()
+#     initialiseMovieModel()
 
 
-main()
+# main()

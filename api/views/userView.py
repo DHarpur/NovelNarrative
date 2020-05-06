@@ -1,10 +1,19 @@
-from flask import Blueprint, request, jsonify, abort, make_response
-from ..models.users import Users
-from app import app
-import hashlib, binascii, os
+import binascii
+import hashlib
+import os
+from flask import request, jsonify, make_response, Blueprint
+from models.users import Users
 
 
-@app.route('/register', methods=["POST"])
+userRoutes = Blueprint('userRoutes', __name__)
+
+
+def load_user(user_id):
+    user = Users(user_data=[user_id, "", "", "", ""])
+    return Users.get_user(user, "SELECT * FROM \"NovelNarrative\".users WHERE user_id = ".format(user_id))
+
+
+@userRoutes.route('/register', methods=["POST"])
 def user_register():
     try:
         user_data = request.get_json()
@@ -13,21 +22,21 @@ def user_register():
         password = hash_password(user_data['password'])
         email = user_data['email']
     except Exception as error:
-        return jsonify({"error": "invalid user data input",
-                        "message": "missing either name, username, email or password",
-                        "status": 400
-                        }), 400
-    new_user = Users([name, username, email, password])
-    if ~(new_user.is_existing_user()):
+        return make_response(jsonify({"error": "invalid user data input",
+                                      "message": "missing either name, username, email or password",
+                                      "status": 400
+                                      }), 400)
+    new_user = Users([name, username, password, email])
+    if not new_user.is_existing_user():
         new_user.create_new_user()
-        return jsonify({
+        return make_response(jsonify({
             "status": 201,
             "message": "user created successfully"
-        }), 201
-    return jsonify({"status": 403, "message": "username already exists"}), 403
+        }), 201)
+    return make_response(jsonify({"status": 403, "message": "username already exists"}), 403)
 
 
-@app.route('/login', methods=["POST"])
+@userRoutes.route('/login', methods=["POST"])
 def user_login():
     try:
         user_data = request.get_json()
@@ -38,13 +47,15 @@ def user_login():
                         "message": "missing either username or password",
                         "status": 400
                         }), 400
-    user = Users(['', username, '', password])
+    user = Users(['', username, password, ''])
     found_user = user.query_login()
     if found_user is not None:
-        if verify_password(found_user['password'], password):
-            token = user.generate_auth_token()
+        print(password)
+        print(found_user.password)
+        if found_user.password == password:
+            token = found_user.generate_auth_token()
             return jsonify({
-                'user': username, 'token': token.decode('ascii'),
+                'user': username, 'token': token['sub'],
                 'message': 'login was successful'}), 200
         else:
             return jsonify({
@@ -53,6 +64,16 @@ def user_login():
     return jsonify({
         'Error': 'Username not found'
     }), 403
+
+
+@userRoutes.route('/logout', methods=['POST'])
+def logout():
+    try:
+        # timed_out = Token(token, date=datetime.utcnow())
+        # timed_out.add_token()
+        return jsonify({'message': 'Logout success'}), 200
+    except Exception as ex:
+        return jsonify(ex), 400
 
 
 def hash_password(password):
