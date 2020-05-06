@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import { Form, Header } from 'semantic-ui-react';
-import MessageSuccess from '../MessageSuccess';
-import MessageFail from '../MessageFail';
+import MessageSuccess from '../components/MessageSuccess';
+import MessageFail from '../components/MessageFail';
 
 const registerBoxStyle = {
     padding: 20,
