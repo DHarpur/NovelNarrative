@@ -1,39 +1,76 @@
 import React from 'react';
-import { Form, Button } from 'semantic-ui-react';
+import axios from 'axios';
+import { Form, Header } from 'semantic-ui-react';
+import MessageSuccess from '../MessageSuccess';
+import MessageFail from '../MessageFail';
 
 const registerBoxStyle = {
-    border: '1px black solid',
     padding: 20,
+    margin: 'auto',
+    width: '70%'
+};
+
+const inputBoxStyle = {
     width: '40%',
-    display: 'inline-block',
-    boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.2)'
-};
+    margin: 'auto'
+}
 
-const RegisterBox = () => {
-    return (
-        <div style={registerBoxStyle}>
-            <p>
-                Register
-            </p>
-            <Form>
-                <Form.Field>
-                    <label>Username</label>
-                    <input type="text" placeholder="Username" />
-                </Form.Field>
-                <Form.Field controlId="formGroupPassword">
-                    <label>Password</label>
-                    <input type="password" placeholder="Password" />
-                </Form.Field>
-                <Form.Field controlId="formGroupPassword">
-                    <label>Confirm Password</label>
-                    <input type="password" placeholder="Confirm Password" />
-                </Form.Field>
-                <Button type="submit">
+class RegisterPage extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            name: '',
+            username: '',
+            password: '',
+            confirmedPassword: '',
+            email: '',
+            openSuccess: false,
+            openFail: false
+        }
+    }
+
+    handleChange = (e, { name, value }) => this.setState({ [name]: value });
+
+    handleSubmit = () => {
+        const { name, username, email, password, confirmedPassword } = this.state;
+        if (password === confirmedPassword) {
+            const user = {name, username, password, email};
+            axios.post('http://localhost:5000/register', user).then(response =>{
+                if(response.status === 201) {
+                    this.setState({openSuccess: true, username:'', password: '', confirmedPassword: '', email: ''})
+                } else if (response.status === 400) {
+                    this.setState({openFail: true})
+                }
+            })
+        } else {
+            this.setState({openFail: true})
+        }
+    } 
+
+    render() {
+        const { name, username, password, confirmedPassword, email, openSuccess, openFail } = this.state;
+        return (
+            <div style={registerBoxStyle}>
+                <Header as='h2' attached='top'>
                     Register
-                </Button>
-            </Form>
-        </div>
-    );
+                </Header>
+                <Form onSubmit={this.handleSubmit} className="attached segment">
+                    <div style={inputBoxStyle}>
+                        <Form.Input label='Enter Name:' placeholder="Name" type="text" name='name' value={name} onChange={this.handleChange} required />
+                        <Form.Input label='Enter username:' placeholder="Username" type="text" name='username' value={username} onChange={this.handleChange} required />
+                        <Form.Input label='Enter password:' type='password' placeholder="Password" name='password' value={password} onChange={this.handleChange} required />
+                        <Form.Input label='Confirm password:' type="password" placeholder="Confirm Password" name='confirmedPassword' value={confirmedPassword} required onChange={this.handleChange} />
+                        <Form.Input label='Email:' type="email" placeholder="Email" name='email' value={email} onChange={this.handleChange} required />
+                        <Form.Button primary>
+                            Register
+                        </Form.Button>
+                    </div>
+                </Form>
+                <MessageSuccess open={openSuccess} />
+                <MessageFail open={openFail} />
+            </div>
+        );
+    }
 };
 
-export default RegisterBox;
+export default RegisterPage;
