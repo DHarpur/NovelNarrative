@@ -13,6 +13,10 @@ const segmentStyle = {
     paddingBottom: 50
 }
 
+const headerStyle = {
+    paddingLeft: 50,
+}
+
 const MoviePage = () => {
     return(
         <Fragment>
